@@ -20,13 +20,11 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    if message.author.name == "N8N" and message.author.discriminator == "0000":
+    if message.author.global_name is None:
         return
 
-    if message.channel.id != 1397472666251825304:
+    if message.channel.id != 1425143044461695208:
         return
-
-    print(message.author.global_name)
 
     webhook_url = os.getenv('WEBHOOK_URL')
     
