@@ -17,6 +17,7 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+
     if message.author == bot.user:
         return
 
@@ -24,17 +25,31 @@ async def on_message(message):
         return
 
     if message.channel.id != 1425143044461695208:
-        return
+        return    
 
-    webhook_url = os.getenv('WEBHOOK_URL')
+    if message.content[0:1] != '!':
+        
+        webhook_url = os.getenv('WEBHOOK_CHAT_URL')
+    
+        if webhook_url:
+            async with aiohttp.ClientSession() as session:
+                payload = {"message": message.content, "session_id": str(message.author.id), "username": str(message.author.global_name)}
+                await session.post(webhook_url, json=payload)
+            print(f"Forwarded message from command czatuj: {message.content}")
+
+
+    await bot.process_commands(message)
+
+@bot.command()
+async def kalendarz(ctx, arg):
+
+    webhook_url = os.getenv('WEBHOOK_CALENDAR_URL')
     
     if webhook_url:
         async with aiohttp.ClientSession() as session:
-            payload = {"message": message.content, "session_id": str(message.author.id), "username": str(message.author.global_name)}
+            payload = {"message": ctx.message.content, "session_id": str(ctx.message.author.id), "username": str(ctx.message.author.global_name)}
             await session.post(webhook_url, json=payload)
-        #print(f"Forwarded message: {message.content}")
+        print(f"Forwarded command from command kalendarz: {ctx.message.content}")
+
     
-    await bot.process_commands(message)
-
-
 bot.run(TOKEN)
